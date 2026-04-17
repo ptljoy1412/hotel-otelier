@@ -1,0 +1,6 @@
+@OtelierBackend_HostAddress = http://localhost:5089
+
+GET {{OtelierBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

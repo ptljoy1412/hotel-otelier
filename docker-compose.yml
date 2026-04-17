@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: otelier_backend
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=otelier_backend;Username=postgres;Password=123
+      - Jwt__Issuer=OtelierBackend
+      - Jwt__Audience=OtelierBackendClients
+      - Jwt__Secret=super-secret-development-key-change-me-12345
+      - Jwt__ExpiryMinutes=60
+    depends_on:
+      - db
+
+volumes:
+  pgdata:  
