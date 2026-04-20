@@ -41,6 +41,9 @@ public sealed class AppDbInitializer
             throw new InvalidOperationException("Database connection string is not configured.");
         }
 
+        // Convert postgres:// URI to Npgsql key-value format if needed
+        connectionString = ConvertToNpgsqlConnectionString(connectionString);
+
         var builder = new NpgsqlConnectionStringBuilder(connectionString);
         var targetDatabase = builder.Database;
         if (string.IsNullOrWhiteSpace(targetDatabase))
@@ -226,5 +229,28 @@ public sealed class AppDbInitializer
     private static string QuoteIdentifier(string identifier)
     {
         return "\"" + identifier.Replace("\"", "\"\"") + "\"";
+    }
+
+    // Converts postgres://user:password@host:port/database?sslmode=require
+    // to Npgsql key-value format: Host=...;Port=...;Database=...;Username=...;Password=...
+    private static string ConvertToNpgsqlConnectionString(string connectionString)
+    {
+        if (!connectionString.StartsWith("postgres://") && !connectionString.StartsWith("postgresql://"))
+            return connectionString; // already in key-value format
+
+        var uri = new Uri(connectionString);
+        var userInfo = uri.UserInfo.Split(':');
+        var username = Uri.UnescapeDataString(userInfo[0]);
+        var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
+        var host = uri.Host;
+        var port = uri.Port > 0 ? uri.Port : 5432;
+        var database = uri.AbsolutePath.TrimStart('/');
+
+        var query = uri.Query.TrimStart('?');
+        var sslMode = "Require";
+        if (query.Contains("sslmode=disable", StringComparison.OrdinalIgnoreCase))
+            sslMode = "Disable";
+
+        return $"Host={host};Port={port};Database={database};Username={username};Password={password};SslMode={sslMode}";
     }
 }
