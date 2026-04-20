@@ -2,6 +2,12 @@
 
 A secure ASP.NET Core Web API for hotel bookings, backed by PostgreSQL with EF Core, local JWT bearer authentication, Serilog structured logging, Swagger/OpenAPI, and Docker support.
 
+## Live Demo
+
+**Production URL:** https://hotel-otelier.onrender.com
+
+**Swagger UI:** https://hotel-otelier.onrender.com/swagger/index.html
+
 ## Tech Stack
 
 - .NET 10 Web API
@@ -200,14 +206,11 @@ EF Core migrations are the source of truth — run `dotnet ef database update` t
 
 ## Deployment
 
-The service is containerized and can be deployed to any platform that supports Docker:
+The service is deployed on **Render** with a PostgreSQL database.
 
-- **Render** – connect the repo, set `ASPNETCORE_ENVIRONMENT=Production` and the connection string env var.
-- **Railway** – add a PostgreSQL plugin, set env vars, deploy from GitHub.
-- **Fly.io** – `fly launch` then `fly deploy`.
-- **Azure App Service** – use the Docker container deployment option.
+**Live URL:** https://hotel-otelier.onrender.com
 
-> Deployment URL: *(add your live URL here after deploying)*
+**Swagger UI:** https://hotel-otelier.onrender.com/swagger/index.html
 
 ---
 
