@@ -231,8 +231,7 @@ public sealed class AppDbInitializer
         return "\"" + identifier.Replace("\"", "\"\"") + "\"";
     }
 
-    // Converts postgres://user:password@host:port/database?sslmode=require
-    // to Npgsql key-value format: Host=...;Port=...;Database=...;Username=...;Password=...
+    // Converts postgres:// URI to Npgsql key-value format if needed (Render provides URI format)
     private static string ConvertToNpgsqlConnectionString(string connectionString)
     {
         if (!connectionString.StartsWith("postgres://") && !connectionString.StartsWith("postgresql://"))
@@ -243,13 +242,9 @@ public sealed class AppDbInitializer
         var username = Uri.UnescapeDataString(userInfo[0]);
         var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
         var host = uri.Host;
-        var port = uri.Port > 0 ? uri.Port : 5432;
+        var port = uri.Port > 0 ? uri.Port : 5432; // default to 5432 if not specified
         var database = uri.AbsolutePath.TrimStart('/');
-
-        var query = uri.Query.TrimStart('?');
-        var sslMode = "Require";
-        if (query.Contains("sslmode=disable", StringComparison.OrdinalIgnoreCase))
-            sslMode = "Disable";
+        var sslMode = connectionString.Contains("sslmode=disable", StringComparison.OrdinalIgnoreCase) ? "Disable" : "Require";
 
         return $"Host={host};Port={port};Database={database};Username={username};Password={password};SslMode={sslMode}";
     }
