@@ -135,7 +135,7 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
-if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker" || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
